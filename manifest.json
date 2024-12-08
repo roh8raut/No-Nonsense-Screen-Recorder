@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "No Nonsense screen recorder",
+  "version": "1.0",
+  "description": "This screen recorder allows you to capture your entire screen or specific windows. The motivation behind creating this was to easily record and share videos for pull request description",
+  "permissions": ["desktopCapture", "downloads"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
