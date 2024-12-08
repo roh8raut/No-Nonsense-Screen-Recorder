@@ -1,5 +1,10 @@
 # No Nonsense Screen Recorder
 
+### Demo
+
+![Alt Text](images/demo.gif)
+--- 
+
 As developers, we often find ourselves working on multiple features, bug fixes, or small tweaks in our codebase. After finishing a task, we often need to provide a visual demonstration of the changes to our reviewers, especially when working on **Pull Requests (PRs)**. A simple screen recording to showcase the feature or fix can make all the difference. But here's the problem:
 
 While there are plenty of screen recorder extensions available today on the Chrome Marketplace, they all have one thing in common—**complexity.**
