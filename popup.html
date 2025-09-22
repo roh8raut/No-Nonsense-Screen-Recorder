@@ -4,37 +4,56 @@
 <head>
   <title>Personal screen recorder</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+    :root {
+      --primary-green: #90EE90;
+      --dark-green: #3CB371;
+      --bg-color: #F8F4E6;
+      --text-color: #333;
+      --button-blue: #3498DB;
+    }
+
     body {
       width: 150px;
-      padding: 10px;
-      font-family: Arial, sans-serif;
+      padding: 15px;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
     }
 
     button {
-      font-size: 16px;
-      font-weight: 200;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
       letter-spacing: 1px;
-      padding: 13px 20px 13px;
+      padding: 10px 15px;
       outline: 0;
-      border: 1px solid black;
+      border: 1px solid var(--text-color);
       cursor: pointer;
       position: relative;
-      background-color: rgba(0, 0, 0, 0);
+      background-color: transparent;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
+      transition: background-color 0.2s;
+      border-radius: 8px; /* Added rounded corners */
+      width: 100%;
     }
 
     button:after {
       content: "";
-      background-color: #ffe54c;
+      background-color: var(--primary-green);
       width: 100%;
       z-index: -1;
       position: absolute;
       height: 100%;
-      top: 7px;
-      left: 7px;
+      top: 5px; /* Adjusted shadow position */
+      left: 5px; /* Adjusted shadow position */
       transition: 0.2s;
+      border-radius: 8px; /* Added rounded corners */
+      border: 1px solid var(--text-color);
     }
 
     button:hover:after {
@@ -52,7 +71,6 @@
 
 <body>
   <button id="startRecording">Start Recording</button>
-  <!-- <button id="stopRecording" disabled>Stop Recording</button> -->
 
   <script src="popup.js"></script>
 </body>

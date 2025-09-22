@@ -9,6 +9,20 @@ chrome.runtime.onMessage.addListener((message) => {
 let mediaRecorder;
 let recordedChunks = [];
 
+// Helper function to update status with appropriate styling
+function updateStatus(text, className = '') {
+  const statusElement = document.getElementById("status");
+  statusElement.textContent = text;
+  
+  // Remove all status classes
+  statusElement.classList.remove('error', 'recording', 'compressing');
+  
+  // Add the new class if provided
+  if (className) {
+    statusElement.classList.add(className);
+  }
+}
+
 async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
   try {
     chrome.desktopCapture.chooseDesktopMedia(
@@ -51,12 +65,11 @@ async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
               type: "video/webm",
             });
 
-            // Check if blob is larger than 15MB
-            const MAX_SIZE = 15 * 1024 * 1024; // 15MB in bytes
+            // Check if blob is larger than 10MB
+            const MAX_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
             if (blob.size > MAX_SIZE) {
-              document.getElementById("status").textContent =
-                "Compressing video...";
+              updateStatus("Compressing video...", "compressing");
               blob = await compressVideo(blob, MAX_SIZE);
             }
 
@@ -68,11 +81,9 @@ async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
           mediaRecorder.start(1000); // Collect data every second
           chrome.tabs.update(activeTabId, { active: true });
 
-          document.getElementById("status").textContent =
-            "Recording started...";
+          updateStatus("Recording started...", "recording");
         } catch (error) {
-          document.getElementById("status").textContent =
-            "recording permission denied";
+          updateStatus("Recording permission denied", "error");
           console.log("recording permission denied;");
         }
       }
@@ -152,8 +163,7 @@ async function compressVideo(originalBlob, targetSize) {
     });
   } catch (error) {
     console.error("Compression failed:", error);
-    document.getElementById("status").textContent =
-      "Compression failed, using original";
+    updateStatus("Compression failed, using original", "error");
     return originalBlob;
   }
 }
@@ -183,5 +193,5 @@ async function downloadRecording(url, chromePinnedExtenstionTabId) {
     });
   }, 100);
 
-  document.getElementById("status").textContent = "Recording downloaded";
+  updateStatus("Recording downloaded");
 }
