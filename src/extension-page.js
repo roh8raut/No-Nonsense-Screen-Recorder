@@ -1,22 +1,27 @@
-chrome.runtime.onMessage.addListener((message) => {
+// Set up the message listener immediately when the script loads
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.name == "request_recording") {
     const { activeTabId, chromePinnedExtenstionTabId } = message.data;
-
     startRecording({ activeTabId, chromePinnedExtenstionTabId });
   }
+  // Important: return true to indicate we will send a response asynchronously
+  return true;
 });
+
+// Signal that the page is ready
+chrome.runtime.sendMessage({ action: "extension_page_ready" });
 
 let mediaRecorder;
 let recordedChunks = [];
 
 // Helper function to update status with appropriate styling
-function updateStatus(text, className = '') {
+function updateStatus(text, className = "") {
   const statusElement = document.getElementById("status");
   statusElement.textContent = text;
-  
+
   // Remove all status classes
-  statusElement.classList.remove('error', 'recording', 'compressing');
-  
+  statusElement.classList.remove("error", "recording", "compressing");
+
   // Add the new class if provided
   if (className) {
     statusElement.classList.add(className);
@@ -77,23 +82,22 @@ async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
             downloadRecording(blobUrl, chromePinnedExtenstionTabId);
           };
 
-          // Request data more frequently for better compression
-          mediaRecorder.start(1000); // Collect data every second
+          // Start recording
+          mediaRecorder.start(1000);
           chrome.tabs.update(activeTabId, { active: true });
-
-          updateStatus("Recording started...", "recording");
+          updateStatus("Recording...", "recording");
         } catch (error) {
-          updateStatus("Recording permission denied", "error");
-          console.log("recording permission denied;");
+          console.error("Error starting recording:", error);
+          updateStatus("Error: " + error.message, "error");
         }
       }
     );
-  } catch (err) {
-    console.error("Error starting screen recording:", err);
+  } catch (error) {
+    console.error("Error in startRecording:", error);
+    updateStatus("Error: " + error.message, "error");
   }
 }
 
-// Function to compress video using lower quality settings
 async function compressVideo(originalBlob, targetSize) {
   try {
     // Create video element to load the original video
@@ -195,3 +199,15 @@ async function downloadRecording(url, chromePinnedExtenstionTabId) {
 
   updateStatus("Recording downloaded");
 }
+
+// Add stop button functionality
+document.addEventListener("DOMContentLoaded", () => {
+  const stopButton = document.getElementById("stopRecording");
+  if (stopButton) {
+    stopButton.addEventListener("click", () => {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+      }
+    });
+  }
+});
