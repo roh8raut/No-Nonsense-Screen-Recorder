@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Personal screen recorder</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+    :root {
+      --primary-green: #90EE90;
+      --dark-green: #3CB371;
+      --bg-color: #F8F4E6;
+      --text-color: #333;
+      --button-blue: #3498DB;
+    }
+
+    body {
+      width: 200px;
+      padding: 15px;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    button {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 10px 15px;
+      outline: 0;
+      border: 1px solid var(--text-color);
+      cursor: pointer;
+      position: relative;
+      background-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      transition: background-color 0.2s;
+      border-radius: 8px;
+      width: 100%;
+      /* margin-top: 15px; */
+    }
+
+    button:after {
+      content: "";
+      background-color: var(--primary-green);
+      width: 100%;
+      z-index: -1;
+      position: absolute;
+      height: 100%;
+      top: 5px;
+      left: 5px;
+      transition: 0.2s;
+      border-radius: 8px;
+      border: 1px solid var(--text-color);
+    }
+
+    button:hover:after {
+      top: 0px;
+      left: 0px;
+    }
+
+    /* Toggle switch styles */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 25px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 25px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 3.5px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--dark-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    @media (min-width: 768px) {
+      button {
+        padding: 13px 50px 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toggle-container">
+    <label class="toggle-label" for="compressToggle">Compress</label>
+    <label class="toggle-switch">
+      <input type="checkbox" id="compressToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <button id="startRecording">Start Recording</button>
+
+  <script type="module" src="popup.js"></script>
+</body>
+
+</html>
