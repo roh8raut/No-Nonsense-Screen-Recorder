@@ -1,34 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM content loaded and parsed!");
   const startBtn = document.getElementById("startRecording");
-  // const audioToggle = document.getElementById("audioToggle");
+  const compressToggle = document.getElementById("compressToggle");
 
-  // Load saved audio preference
-  // chrome.storage.local.get(['recordAudio'], function(result) {
-  //   audioToggle.checked = result.recordAudio !== false; // Default to true if not set
-  // });
+  // Load saved preference (default: true)
+  chrome.storage.local.get(["compressVideo"], function (result) {
+    compressToggle.checked = result.compressVideo !== false;
+  });
 
-  // // Save audio preference when toggled
-  // audioToggle.addEventListener('change', function() {
-  //   chrome.storage.local.set({ recordAudio: audioToggle.checked });
-  // });
+  compressToggle.addEventListener("change", function () {
+    chrome.storage.local.set({ compressVideo: compressToggle.checked });
+  });
 
-  startBtn.addEventListener("click", () => {
-
-
-    // const recordAudio = audioToggle.checked;
-    
-    // Send message with audio preference
+  startBtn.addEventListener("click", async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.runtime.sendMessage({
       action: "request_recording",
-
-      message: { 
-        activeTabId: null,
-        // recordAudio: recordAudio
+      message: {
+        activeTabId: tab?.id ?? null,
+        compressVideo: compressToggle.checked,
       },
     });
-    
-    // Close the popup
     window.close();
   });
 });

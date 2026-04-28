@@ -1,11 +1,9 @@
 // Set up the message listener immediately when the script loads
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.name == "request_recording") {
-    const { activeTabId, chromePinnedExtenstionTabId } = message.data;
-    startRecording({ activeTabId, chromePinnedExtenstionTabId });
+    const { activeTabId, chromePinnedExtenstionTabId, compressVideo: shouldCompress } = message.data;
+    startRecording({ activeTabId, chromePinnedExtenstionTabId, shouldCompress });
   }
-  // Important: return true to indicate we will send a response asynchronously
-  return true;
 });
 
 // Signal that the page is ready
@@ -28,13 +26,15 @@ function updateStatus(text, className = "") {
   }
 }
 
-async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
+async function startRecording({ activeTabId, chromePinnedExtenstionTabId, shouldCompress }) {
   try {
     chrome.desktopCapture.chooseDesktopMedia(
       ["screen", "window", "tab"],
       async function (streamId) {
         try {
           if (streamId == null) {
+            // User declined — close the extension tab
+            chrome.tabs.remove(chromePinnedExtenstionTabId);
             return;
           }
 
@@ -74,8 +74,15 @@ async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
             const MAX_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
             if (blob.size > MAX_SIZE) {
-              updateStatus("Compressing video...", "compressing");
-              blob = await compressVideo(blob, MAX_SIZE);
+              if (shouldCompress) {
+                updateStatus("Compressing video...", "compressing");
+                blob = await compressVideo(blob, MAX_SIZE);
+              } else {
+                const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+                updateStatus(`Recording too large (${sizeMB}MB). Max allowed is 10MB. Try a shorter recording.`, "error");
+                recordedChunks = [];
+                return;
+              }
             }
 
             const blobUrl = URL.createObjectURL(blob);
@@ -88,13 +95,14 @@ async function startRecording({ activeTabId, chromePinnedExtenstionTabId }) {
           updateStatus("Recording...", "recording");
         } catch (error) {
           console.error("Error starting recording:", error);
-          updateStatus("Error: " + error.message, "error");
+          updateStatus("Error: " + (error.message || error), "error");
+          chrome.tabs.remove(chromePinnedExtenstionTabId);
         }
       }
     );
   } catch (error) {
     console.error("Error in startRecording:", error);
-    updateStatus("Error: " + error.message, "error");
+    updateStatus("Error: " + (error.message || error), "error");
   }
 }
 
