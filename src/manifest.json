@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "No Nonsense Screen Recorder",
+  "version": "0.0.2",
+  "description": "Capture your entire screen or specific windows and quickly save or share recordings.",
+  "permissions": ["desktopCapture", "downloads"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}

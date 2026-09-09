@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Nonsense Screen Recorder</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        
+        :root {
+            --primary-green: #90EE90;
+            --dark-green: #3CB371;
+            --bg-color: #F8F4E6;
+            --text-color: #333;
+            --grid-line-color: rgba(0, 0, 0, 0.1);
+            --error-red: #E74C3C;
+            --success-green: #27AE60;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            padding: 40px;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, var(--grid-line-color) 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, var(--grid-line-color) 20px);
+            background-size: 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3.5em;
+            letter-spacing: 2px;
+            color: var(--dark-green);
+        }
+
+        header p {
+            font-size: 1.2em;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .callout {
+            background-color: var(--success-green);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .callout.error {
+            background-color: var(--error-red);
+        }
+
+        .callout.recording {
+            background-color: var(--dark-green);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .callout.compressing {
+            background-color: #3498db;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Features Section */
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature {
+            background-color: white;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 30px 20px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature h3 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8em;
+            color: var(--dark-green);
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            font-size: 0.8em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⏺ No Nonsense Screen Recorder</h1>
+            <p>Simple, powerful screen recording without the complexity</p>
+        </header>
+    
+        <div class="callout" id="status">
+            Ready to record
+        </div>
+    
+        <section class="features">
+            <div class="feature">
+                <h3>Why Choose Us</h3>
+                <p>Everything you need, nothing you don't</p>
+            </div>
+            <div class="feature">
+                <h3>High-quality screen recording</h3>
+                <p>Crystal clear recordings without compromise</p>
+            </div>
+            <div class="feature">
+                <h3>No watermarks or time limits</h3>
+                <p>Record freely without restrictions</p>
+            </div>
+            <div class="feature">
+                <h3>Instant download after recording</h3>
+                <p>Save your recordings locally with one click</p>
+            </div>
+            <div class="feature">
+                <h3>Privacy-focused</h3>
+                <p>All recordings stay local and secure</p>
+            </div>
+        </section>
+    
+        <footer>
+            &copy; 2025 No Nonsense Screen Recorder. All rights reserved.
+        </footer>
+    </div>
+
+    <script type="module" src="extension-page.js"></script>
+</body>
+</html>
