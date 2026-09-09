@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest({
   manifest_version: 3,
   name: 'No Nonsense Screen Recorder',
-  version: '0.0.4',
+  version: '0.1.0',
   description: 'Capture your entire screen or specific windows and quickly save or share recordings.',
   permissions: [
     'downloads',
