@@ -1,25 +1,23 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("startRecording");
-  const compressToggle = document.getElementById("compressToggle");
+  const stopBtn = document.getElementById("stopRecording");
 
-  // Load saved preference (default: true)
-  chrome.storage.local.get(["compressVideo"], function (result) {
-    compressToggle.checked = result.compressVideo !== false;
+  refresh();
+
+  startBtn.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "request_recording" });
+    window.close(); // share dialog takes focus; popup closes on its own anyway
   });
 
-  compressToggle.addEventListener("change", function () {
-    chrome.storage.local.set({ compressVideo: compressToggle.checked });
-  });
-
-  startBtn.addEventListener("click", async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    chrome.runtime.sendMessage({
-      action: "request_recording",
-      message: {
-        activeTabId: tab?.id ?? null,
-        compressVideo: compressToggle.checked,
-      },
-    });
+  stopBtn.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ target: "offscreen", type: "stop" });
     window.close();
   });
+
+  // Show Stop instead of Start while a recording is in progress.
+  async function refresh() {
+    const { recording } = await chrome.storage.session.get("recording");
+    startBtn.hidden = recording === true;
+    stopBtn.hidden = recording !== true;
+  }
 });

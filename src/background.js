@@ -1,40 +1,42 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "request_recording") {
-    handleRecordingRequest(request.message);
+// Orchestrates recording. desktopCapture picker runs here in the worker; the
+// actual capture/record happens in a reusable offscreen document.
+
+// Let the popup read session state (defaults to background-only otherwise).
+chrome.storage.session.setAccessLevel?.({ accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS" });
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.action === "request_recording") startRecording();
+  if (msg.target === "background" && msg.type === "started") chrome.storage.session.set({ recording: true });
+  if (msg.target === "background" && msg.type === "recorded") {
+    chrome.storage.session.set({ recording: false });
+    if (msg.url) save(msg.url); // null = user cancelled the share dialog
   }
 });
 
-async function handleRecordingRequest(message) {
-  try {
-    const tab = await chrome.tabs.create({
-      url: chrome.runtime.getURL("src/extension-page.html"),
-      pinned: true,
-      active: true,
-    });
-
-    await waitForTabReady(tab.id);
-
-    await chrome.tabs.sendMessage(tab.id, {
-      name: "request_recording",
-      data: {
-        activeTabId: message.activeTabId,
-        compressVideo: message.compressVideo,
-        chromePinnedExtenstionTabId: tab.id,
-      },
-    });
-  } catch (error) {
-    console.error("Error in handleRecordingRequest:", error);
-  }
+async function startRecording() {
+  // getDisplayMedia (called in the offscreen doc) shows Chrome's own share
+  // dialog — that dialog IS the consent, no picker API or gesture needed here.
+  await ensureOffscreen();
+  chrome.runtime.sendMessage({ target: "offscreen", type: "start" });
 }
 
-function waitForTabReady(tabId) {
-  return new Promise((resolve) => {
-    const onMessage = (request, sender) => {
-      if (request.action === "extension_page_ready" && sender.tab?.id === tabId) {
-        chrome.runtime.onMessage.removeListener(onMessage);
-        resolve();
-      }
-    };
-    chrome.runtime.onMessage.addListener(onMessage);
-  });
+async function save(dataUrl) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  chrome.downloads.download({ url: dataUrl, filename: `recording-${stamp}.webm`, saveAs: true });
+}
+
+async function ensureOffscreen() {
+  const path = "src/offscreen.html";
+  const existing = await chrome.offscreen.hasDocument?.();
+  if (existing) return;
+  try {
+    await chrome.offscreen.createDocument({
+      url: path,
+      reasons: ["DISPLAY_MEDIA"],
+      justification: "Record the screen with MediaRecorder.",
+    });
+  } catch (e) {
+    // createDocument throws if one already exists (race between clicks) — fine.
+    if (!String(e).includes("Only a single offscreen")) throw e;
+  }
 }

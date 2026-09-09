@@ -5,6 +5,12 @@ import manifest from './manifest.config.js'
 import { name, version } from './package.json'
 
 export default defineConfig({
+  server: {
+    // Fixed port + CORS so the worker can fetch @crxjs's HMR client (else register fails).
+    port: 5173,
+    strictPort: true,
+    cors: { origin: '*' },
+  },
   plugins: [
     crx({ manifest }),
     zip({ outDir: 'release', outFileName: `crx-${name}-${version}.zip` }),
@@ -14,7 +20,7 @@ export default defineConfig({
       input: {
         // Explicitly define all entry points
         popup: 'src/popup.html',
-        extensionPage: 'src/extension-page.html',
+        offscreen: 'src/offscreen.html',
       },
     },
   },
