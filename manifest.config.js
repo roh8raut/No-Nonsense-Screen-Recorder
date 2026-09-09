@@ -6,9 +6,9 @@ export default defineManifest({
   version: '0.0.4',
   description: 'Capture your entire screen or specific windows and quickly save or share recordings.',
   permissions: [
-    'desktopCapture',
     'downloads',
-    'storage'  // Add this for saving audio preference
+    'storage',
+    'offscreen'
   ],
   background: {
     service_worker: 'src/background.js',
